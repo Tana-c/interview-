@@ -56,6 +56,7 @@ function App() {
   };
 
   const handleSubmit = () => {
+    console.log('hello world')
     if (!inputValue.trim()) return;
 
     setAnswers(prev => ({
@@ -75,7 +76,168 @@ function App() {
     );
   };
 
-  const QuestionCard = ({ question, isExpanded, isActive }) => {
+  const completedCount = Object.keys(insights).length;
+  const progress = (completedCount / questions.length) * 100;
+
+  return (
+    <div className="flex h-screen bg-background text-white overflow-hidden">
+      {/* Sidebar */}
+      <div className="w-80 bg-sidebar border-r border-border overflow-y-auto flex-shrink-0">
+        <div className="p-6">
+          {/* Header */}
+          <div className="mb-6">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                <span className="text-2xl">🤖</span>
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-text">
+                  AI Interview
+                </h1>
+                <p className="text-xs text-textMuted">
+                  Qual at Scale
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Progress */}
+          <div className="mb-6 p-4 bg-gradient-to-br from-card to-[#151719] rounded-xl border border-border">
+            <div className="flex justify-between items-center text-xs text-textMuted mb-2">
+              <span className="font-medium">ความคืบหน้า</span>
+              <span className="font-bold text-blue-400">{completedCount}/{questions.length}</span>
+            </div>
+            <div className="w-full bg-border rounded-full h-2.5 overflow-hidden">
+              <div 
+                className="bg-gradient-to-r from-blue-500 to-purple-500 h-2.5 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <div className="mt-2 text-xs text-textMuted">
+              {progress === 100 ? '✅ เสร็จสมบูรณ์!' : `เหลืออีก ${questions.length - completedCount} คำถาม`}
+            </div>
+          </div>
+
+          {/* Question List */}
+          <div className="space-y-2">
+            <h3 className="text-xs font-semibold text-textMuted uppercase tracking-wide mb-3">
+              รายการคำถาม
+            </h3>
+            {questions.map((q, idx) => {
+              const status = getQuestionStatus(q.id);
+              return (
+                <button
+                  key={q.id}
+                  onClick={() => {
+                    setCurrentQuestionId(q.id);
+                    if (!expandedCards.includes(q.id)) {
+                      setExpandedCards(prev => [...prev, q.id]);
+                    }
+                  }}
+                  className={`w-full text-left p-4 rounded-xl transition-all ${
+                    status === 'active' 
+                      ? 'bg-gradient-to-r from-blue-900/60 to-blue-800/60 border-l-4 border-blue-500 shadow-lg' 
+                      : status === 'completed'
+                      ? 'bg-card hover:bg-cardHover border-l-4 border-green-500/50'
+                      : 'bg-card hover:bg-cardHover opacity-60 hover:opacity-80'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex-shrink-0">
+                      {status === 'completed' ? (
+                        <div className="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center">
+                          <Check className="w-5 h-5 text-white" />
+                        </div>
+                      ) : status === 'active' ? (
+                        <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center animate-pulse">
+                          <Circle className="w-5 h-5 text-white fill-current" />
+                        </div>
+                      ) : (
+                        <div className="w-8 h-8 rounded-lg bg-gray-700 flex items-center justify-center">
+                          <Circle className="w-5 h-5 text-gray-500" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs text-textMuted mb-1 font-medium">
+                        คำถามที่ {idx + 1}
+                      </div>
+                      <div className="text-sm font-medium text-text line-clamp-2 leading-snug">
+                        {q.text}
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Panel */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-4xl mx-auto p-8">
+          {/* Header */}
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-text mb-2">
+              การสัมภาษณ์เชิงลึก
+            </h2>
+            <p className="text-textMuted leading-relaxed">
+              ตอบคำถามอย่างละเอียดเพื่อให้เราเข้าใจมุมมองและประสบการณ์ของคุณอย่างลึกซึ้ง
+            </p>
+          </div>
+
+          {/* Questions */}
+          <div className="space-y-4">
+            {questions.map((q) => (
+              <QuestionCard
+                key={q.id}
+                answers={answers}
+                followUps={followUps}
+                insights={insights}
+                isAITyping={isAITyping}
+                handleSubmit={handleSubmit}
+                setInputValue={setInputValue}
+                inputValue={inputValue}
+                toggleCardExpansion={toggleCardExpansion}
+                question={q}
+                isExpanded={expandedCards.includes(q.id)}
+                isActive={currentQuestionId === q.id && !insights[q.id]}
+              />
+            ))}
+          </div>
+
+          {/* Completion Message */}
+          {completedCount === questions.length && (
+            <div className="mt-8 p-6 bg-gradient-to-r from-green-600/20 via-blue-600/20 to-purple-600/20 rounded-2xl border border-green-500/30 animate-fadeIn">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center flex-shrink-0">
+                  <span className="text-2xl">🎉</span>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-text mb-2">
+                    เสร็จสมบูรณ์!
+                  </h3>
+                  <p className="text-text mb-4 leading-relaxed">
+                    ขอบคุณสำหรับการให้ข้อมูลที่ละเอียดและมีคุณค่า ระบบ AI กำลังวิเคราะห์และสังเคราะห์ Insights จากคำตอบของคุณ
+                  </p>
+                  <button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-lg font-medium transition-all shadow-lg hover:shadow-blue-500/50">
+                    📊 ดูรายงานสรุป Insights
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default App;
+
+
+function QuestionCard ({ question, isExpanded, isActive, answers, followUps, insights, isAITyping, handleSubmit, setInputValue, inputValue, toggleCardExpansion }) {
     const hasAnswers = answers[question.id] && answers[question.id].length > 0;
     const questionFollowUps = followUps[question.id] || [];
     const insight = insights[question.id];
@@ -227,12 +389,12 @@ function App() {
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder="เขียนคำตอบของคุณที่นี่... (กด Cmd+Enter เพื่อส่ง)"
                     className="w-full bg-inputBg text-text rounded-xl px-4 py-3 min-h-[120px] resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 border border-border placeholder:text-textMuted"
-                    // onKeyDown={(e) => {
-                    //   if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                    //     e.preventDefault();
-                    //     handleSubmit();
-                    //   }
-                    // }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                        e.preventDefault();
+                        handleSubmit();
+                      }
+                    }}
                   />
                 </div>
                 <div className="mt-3 flex justify-between items-center">
@@ -255,155 +417,3 @@ function App() {
       </div>
     );
   };
-
-  const completedCount = Object.keys(insights).length;
-  const progress = (completedCount / questions.length) * 100;
-
-  return (
-    <div className="flex h-screen bg-background text-white overflow-hidden">
-      {/* Sidebar */}
-      <div className="w-80 bg-sidebar border-r border-border overflow-y-auto flex-shrink-0">
-        <div className="p-6">
-          {/* Header */}
-          <div className="mb-6">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                <span className="text-2xl">🤖</span>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-text">
-                  AI Interview
-                </h1>
-                <p className="text-xs text-textMuted">
-                  Qual at Scale
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Progress */}
-          <div className="mb-6 p-4 bg-gradient-to-br from-card to-[#151719] rounded-xl border border-border">
-            <div className="flex justify-between items-center text-xs text-textMuted mb-2">
-              <span className="font-medium">ความคืบหน้า</span>
-              <span className="font-bold text-blue-400">{completedCount}/{questions.length}</span>
-            </div>
-            <div className="w-full bg-border rounded-full h-2.5 overflow-hidden">
-              <div 
-                className="bg-gradient-to-r from-blue-500 to-purple-500 h-2.5 rounded-full transition-all duration-500 ease-out"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            <div className="mt-2 text-xs text-textMuted">
-              {progress === 100 ? '✅ เสร็จสมบูรณ์!' : `เหลืออีก ${questions.length - completedCount} คำถาม`}
-            </div>
-          </div>
-
-          {/* Question List */}
-          <div className="space-y-2">
-            <h3 className="text-xs font-semibold text-textMuted uppercase tracking-wide mb-3">
-              รายการคำถาม
-            </h3>
-            {questions.map((q, idx) => {
-              const status = getQuestionStatus(q.id);
-              return (
-                <button
-                  key={q.id}
-                  onClick={() => {
-                    setCurrentQuestionId(q.id);
-                    if (!expandedCards.includes(q.id)) {
-                      setExpandedCards(prev => [...prev, q.id]);
-                    }
-                  }}
-                  className={`w-full text-left p-4 rounded-xl transition-all ${
-                    status === 'active' 
-                      ? 'bg-gradient-to-r from-blue-900/60 to-blue-800/60 border-l-4 border-blue-500 shadow-lg' 
-                      : status === 'completed'
-                      ? 'bg-card hover:bg-cardHover border-l-4 border-green-500/50'
-                      : 'bg-card hover:bg-cardHover opacity-60 hover:opacity-80'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex-shrink-0">
-                      {status === 'completed' ? (
-                        <div className="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center">
-                          <Check className="w-5 h-5 text-white" />
-                        </div>
-                      ) : status === 'active' ? (
-                        <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center animate-pulse">
-                          <Circle className="w-5 h-5 text-white fill-current" />
-                        </div>
-                      ) : (
-                        <div className="w-8 h-8 rounded-lg bg-gray-700 flex items-center justify-center">
-                          <Circle className="w-5 h-5 text-gray-500" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs text-textMuted mb-1 font-medium">
-                        คำถามที่ {idx + 1}
-                      </div>
-                      <div className="text-sm font-medium text-text line-clamp-2 leading-snug">
-                        {q.text}
-                      </div>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Main Panel */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-4xl mx-auto p-8">
-          {/* Header */}
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold text-text mb-2">
-              การสัมภาษณ์เชิงลึก
-            </h2>
-            <p className="text-textMuted leading-relaxed">
-              ตอบคำถามอย่างละเอียดเพื่อให้เราเข้าใจมุมมองและประสบการณ์ของคุณอย่างลึกซึ้ง
-            </p>
-          </div>
-
-          {/* Questions */}
-          <div className="space-y-4">
-            {questions.map((q) => (
-              <QuestionCard
-                key={q.id}
-                question={q}
-                isExpanded={expandedCards.includes(q.id)}
-                isActive={currentQuestionId === q.id && !insights[q.id]}
-              />
-            ))}
-          </div>
-
-          {/* Completion Message */}
-          {completedCount === questions.length && (
-            <div className="mt-8 p-6 bg-gradient-to-r from-green-600/20 via-blue-600/20 to-purple-600/20 rounded-2xl border border-green-500/30 animate-fadeIn">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center flex-shrink-0">
-                  <span className="text-2xl">🎉</span>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-text mb-2">
-                    เสร็จสมบูรณ์!
-                  </h3>
-                  <p className="text-text mb-4 leading-relaxed">
-                    ขอบคุณสำหรับการให้ข้อมูลที่ละเอียดและมีคุณค่า ระบบ AI กำลังวิเคราะห์และสังเคราะห์ Insights จากคำตอบของคุณ
-                  </p>
-                  <button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-lg font-medium transition-all shadow-lg hover:shadow-blue-500/50">
-                    📊 ดูรายงานสรุป Insights
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default App;
