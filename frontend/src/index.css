@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-background: 240 242 245;
+  --color-sidebar: 255 255 255;
+  --color-surface: 255 255 255;
+  --color-surface-muted: 231 243 255;
+  --color-card: 255 255 255;
+  --color-card-hover: 245 246 247;
+  --color-border: 218 221 225;
+  --color-border-muted: 228 230 235;
+  --color-primary: 24 119 242;
+  --color-accent: 66 183 42;
+  --color-secondary: 101 103 107;
+  --color-text: 28 30 33;
+  --color-text-muted: 101 103 107;
+  --color-input-bg: 255 255 255;
+  --color-success: 49 162 76;
+  --color-danger: 235 68 90;
+  --color-info: 240 242 245;
+}
+
+.theme-dark {
+  --color-background: 11 15 25;
+  --color-sidebar: 17 24 39;
+  --color-surface: 17 24 39;
+  --color-surface-muted: 27 37 54;
+  --color-card: 27 37 54;
+  --color-card-hover: 35 47 67;
+  --color-border: 47 60 82;
+  --color-border-muted: 28 37 53;
+  --color-primary: 24 119 242;
+  --color-accent: 66 183 42;
+  --color-secondary: 148 163 184;
+  --color-text: 244 247 255;
+  --color-text-muted: 148 163 184;
+  --color-input-bg: 15 23 42;
+  --color-success: 74 222 128;
+  --color-danger: 248 113 113;
+  --color-info: 17 24 39;
+}
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  body {
+    @apply m-0 p-0 font-sans antialiased bg-background text-text transition-colors duration-300;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: rgba(24, 119, 242, 0.3);
+    color: #ffffff;
+  }
+}
+
+@layer utilities {
+  .text-blue-600,
+  .text-blue-500,
+  .text-blue-400 {
+    @apply text-text !important;
+  }
+
+  .bg-blue-600,
+  .bg-blue-500,
+  .bg-purple-600 {
+    @apply bg-primary !important;
+  }
+
+  .bg-blue-50,
+  .bg-purple-50 {
+    @apply bg-cardHover !important;
+  }
+
+  .border-blue-600,
+  .border-blue-500 {
+    @apply border-primary !important;
+  }
+
+  .from-blue-600 {
+    --tw-gradient-from: #1877f2 !important;
+    --tw-gradient-to: rgb(24 119 242 / 0) !important;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+  }
+
+  .to-purple-600 {
+    --tw-gradient-to: #1451a1 !important;
+  }
+
+  .shadow-soft {
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-surface border border-border rounded-[32px] shadow-soft;
+  }
+
+  .glow-card {
+    @apply bg-card border border-border rounded-2xl shadow-soft;
+  }
+
+  .aurora-pill {
+    @apply bg-primary text-white font-semibold px-3 py-1 rounded-full text-xs uppercase tracking-wide;
+  }
+
+  .gradient-border {
+    @apply border border-primary/30 rounded-2xl;
+  }
+
+  .swal2-popup {
+    background-color: rgb(var(--color-surface) / 1);
+    color: rgb(var(--color-text) / 1);
+    @apply border border-border rounded-2xl shadow-soft;
+  }
+
+  .swal2-popup.swal2-toast {
+    @apply bg-card border border-border text-text rounded-2xl shadow-soft;
+  }
+
+  .swal2-styled.swal2-confirm {
+    @apply bg-primary text-white font-semibold px-6;
+  }
+
+  .swal2-styled.swal2-cancel {
+    @apply bg-transparent border border-border text-text font-semibold px-6;
+  }
+}
