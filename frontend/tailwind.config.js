@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -20,6 +19,7 @@ export default {
         border: 'rgb(var(--color-border) / <alpha-value>)',
         borderMuted: 'rgb(var(--color-border-muted) / <alpha-value>)',
         primary: 'rgb(var(--color-primary) / <alpha-value>)',
+        primaryHover: 'rgb(var(--color-primary-hover) / <alpha-value>)',
         accent: 'rgb(var(--color-accent) / <alpha-value>)',
         secondary: 'rgb(var(--color-secondary) / <alpha-value>)',
         text: 'rgb(var(--color-text) / <alpha-value>)',
@@ -27,10 +27,8 @@ export default {
         inputBg: 'rgb(var(--color-input-bg) / <alpha-value>)',
         success: 'rgb(var(--color-success) / <alpha-value>)',
         danger: 'rgb(var(--color-danger) / <alpha-value>)',
+        warning: 'rgb(var(--color-warning) / <alpha-value>)',
         info: 'rgb(var(--color-info) / <alpha-value>)',
-      },
-      boxShadow: {
-        soft: '0 12px 28px rgba(0, 0, 0, 0.12)',
       },
       animation: {
         fadeIn: 'fadeIn 0.3s ease-out',

@@ -1,19 +1,18 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
 import Router from './Router.jsx'
-import InterviewApp from './InterviewApp.jsx'
 import './index.css'
-const savedTheme = localStorage.getItem('theme') === 'dark' ? 'theme-dark' : 'theme-light'
-document.body.classList.remove('theme-light', 'theme-dark')
-document.body.classList.add(savedTheme)
-// Choose which component to render:
-// - Router: Simple AI Interviewer with navigation (NEW - Interview + Config pages)
-// - App: Original full-featured interview (existing)
-// - InterviewApp: Alternative full-featured interview
-const ComponentToRender = Router; // Change this to switch between components
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { far } from '@fortawesome/free-regular-svg-icons'
+import { fab } from '@fortawesome/free-brands-svg-icons'
+import 'sweetalert2/dist/sweetalert2.min.css'
+
+// Add all FontAwesome icons to the library
+library.add(fas, far, fab)
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ComponentToRender/>
+    <Router />
   </React.StrictMode>,
 )
