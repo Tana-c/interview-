@@ -1,15 +1,28 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import SimpleInterview from './SimpleInterviewNew.jsx';
 import ConfigPage from './ConfigPage.jsx';
 
-function Router() {
-  const [currentPage, setCurrentPage] = useState('interview'); // 'interview' or 'config'
+// Wrapper component to pass navigate function
+function SimpleInterviewWrapper() {
+  const navigate = useNavigate();
+  return <SimpleInterview onNavigateToConfig={() => navigate('/config')} />;
+}
 
+function ConfigPageWrapper() {
+  const navigate = useNavigate();
+  return <ConfigPage onNavigateToInterview={() => navigate('/')} />;
+}
+
+function Router() {
   return (
-    <>
-      {currentPage === 'interview' && <SimpleInterview onNavigateToConfig={() => setCurrentPage('config')} />}
-      {currentPage === 'config' && <ConfigPage onNavigateToInterview={() => setCurrentPage('interview')} />}
-    </>
+    <BrowserRouter basename="/aiinterview">
+      <Routes>
+        <Route path="/" element={<SimpleInterviewWrapper />} />
+        <Route path="/config" element={<ConfigPageWrapper />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

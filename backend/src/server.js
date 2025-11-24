@@ -21,8 +21,10 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
   : [
       'http://localhost:3000',
       'http://localhost:5173',
+      'http://localhost:8054',
       'http://127.0.0.1:3000',
-      'http://127.0.0.1:5173'
+      'http://127.0.0.1:5173',
+      'http://127.0.0.1:8054'
     ];
 
 app.use(cors({
@@ -1041,7 +1043,7 @@ const startServer = async () => {
   
   const ports = process.env.API_PORTS
     ? process.env.API_PORTS.split(',').map((p) => Number(p.trim())).filter(Boolean)
-    : [Number(process.env.PORT) || 8000, 8001];
+    : [Number(process.env.PORT) || 7183];
 
   [...new Set(ports)].forEach((port) => {
     app.listen(port, () => {
