@@ -7,6 +7,11 @@
   "scripts": {
     "dev": "nodemon",
     "start": "node src/server.js",
+    "pm2:start": "pm2 start ecosystem.config.js --env production",
+    "pm2:stop": "pm2 stop ai-interviewer",
+    "pm2:restart": "pm2 restart ai-interviewer",
+    "pm2:logs": "pm2 logs ai-interviewer",
+    "pm2:monit": "pm2 monit",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
