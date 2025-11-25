@@ -5,6 +5,7 @@ import { mkdir, readFile, writeFile, readdir, unlink } from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { v4 as uuid } from 'uuid';
+import serveStatic from 'serve-static';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,8 +13,68 @@ const DATA_DIR = path.join(__dirname, '..', 'data');
 const CONFIG_PATH = path.join(DATA_DIR, 'config.json');
 const DEFAULT_CONFIG_PATH = path.join(DATA_DIR, 'defaultConfig.json');
 const SESSION_EXPORT_DIR = path.join(DATA_DIR, 'sessions');
-
+const PUBLIC_DIR = path.join(__dirname, "public");
+const DIST_DIR = path.join(__dirname, '..', 'dist');
 const app = express();
+
+// Serve static files from dist folder at /aiinterview path
+// This middleware will serve files from DIST_DIR when requested under /aiinterview
+// For example: /aiinterview/assets/file.js -> DIST_DIR/assets/file.js
+const staticMiddleware = express.static(DIST_DIR, {
+  index: false, // Don't serve index.html automatically for directory requests
+  setHeaders: (res, filePath) => {
+    // Ensure correct MIME types
+    if (filePath.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+    } else if (filePath.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    } else if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) {
+      res.setHeader('Content-Type', 'image/jpeg');
+    } else if (filePath.endsWith('.png')) {
+      res.setHeader('Content-Type', 'image/png');
+    } else if (filePath.endsWith('.svg')) {
+      res.setHeader('Content-Type', 'image/svg+xml');
+    } else if (filePath.endsWith('.ico')) {
+      res.setHeader('Content-Type', 'image/x-icon');
+    }
+  }
+});
+
+app.use('/aiinterview', staticMiddleware);
+
+// Redirect root path to /aiinterview
+app.get('/', (req, res) => {
+  res.redirect('/aiinterview');
+});
+
+// Serve index.html for SPA routing under /aiinterview
+// This middleware runs after static middleware, so it only handles requests that weren't served as static files
+app.use('/aiinterview', (req, res, next) => {
+  // Only handle GET requests
+  if (req.method !== 'GET') {
+    return next();
+  }
+  
+  // Check if this is a static asset request
+  const staticFileExtensions = ['.css', '.js', '.jpg', '.jpeg', '.png', '.gif', '.svg', '.ico', '.woff', '.woff2', '.ttf', '.eot', '.json', '.map'];
+  const pathLower = req.path.toLowerCase();
+  const hasExtension = staticFileExtensions.some(ext => pathLower.endsWith(ext));
+  
+  // If it's a static file extension, it should have been handled by static middleware
+  // If we reach here, the file doesn't exist - return 404
+  if (hasExtension) {
+    return res.status(404).json({ error: 'File not found', path: req.path });
+  }
+  
+  // For all other paths (including root /aiinterview), serve index.html for SPA routing
+  res.sendFile(path.join(DIST_DIR, 'index.html'), (err) => {
+    if (err) {
+      console.error('Error sending index.html:', err);
+      res.status(500).send('Internal server error');
+    }
+  });
+});
+
 
 // CORS configuration - support multiple origins for production
 const allowedOrigins = process.env.ALLOWED_ORIGINS 
@@ -1045,9 +1106,20 @@ const startServer = async () => {
     ? process.env.API_PORTS.split(',').map((p) => Number(p.trim())).filter(Boolean)
     : [Number(process.env.PORT) || 7183];
 
+  // Get IP address from environment or default to '0.0.0.0' (all interfaces)
+  // For VPS, use 0.0.0.0 to accept connections on all network interfaces
+  const host = process.env.HOST || process.env.IP || '0.0.0.0';
+  const vpsIp = process.env.VPS_IP || '72.61.120.205'; // VPS IP address
+
   [...new Set(ports)].forEach((port) => {
-    app.listen(port, () => {
-      console.log(`✅ API server listening on http://localhost:${port}`);
+    app.listen(port, host, () => {
+      if (host === '0.0.0.0') {
+        console.log(`✅ API server listening on http://localhost:${port}`);
+        console.log(`✅ API server accessible at http://${vpsIp}:${port}`);
+        console.log(`   Server is listening on all network interfaces`);
+      } else {
+        console.log(`✅ API server listening on http://${host}:${port}`);
+      }
     });
   });
 };
