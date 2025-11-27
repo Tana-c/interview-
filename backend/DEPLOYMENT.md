@@ -305,6 +305,36 @@ sudo ufw allow 7183/tcp
 pm2 logs ai-interviewer | grep "OpenAI API Key"
 ```
 
+### Error: ERR_REQUIRE_ESM (ES Module Error)
+
+ถ้าเจอ error `ERR_REQUIRE_ESM: Must use import to load ES Module`:
+
+**วิธีแก้:**
+
+1. **ตรวจสอบ Node.js version** (ต้องเป็น 18+):
+```bash
+node --version
+# ควรเป็น v18.x.x หรือสูงกว่า
+```
+
+2. **ตรวจสอบว่า PM2 รันจาก directory ที่ถูกต้อง:**
+```bash
+cd /root/ai_interviewer/interview-/backend
+pm2 delete ai-interviewer
+pm2 start ecosystem.config.cjs --env production
+```
+
+3. **หรือใช้ npm script โดยตรง:**
+```bash
+pm2 start npm --name "ai-interviewer" -- start
+```
+
+4. **ตรวจสอบ package.json มี `"type": "module"`:**
+```bash
+cat package.json | grep type
+# ควรแสดง: "type": "module"
+```
+
 ---
 
 ## 📊 Monitoring

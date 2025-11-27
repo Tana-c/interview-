@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 
 function ConfigPage({ onNavigateToInterview }) {
   // API Base URL - Support environment variable for production
-  const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:7183';
+  const API_BASE = import.meta.env.VITE_API_BASE || 'https://72.61.120.205:7183';
   const [activeTab, setActiveTab] = useState('code-types');
   const [config, setConfig] = useState({
     code_types: {},

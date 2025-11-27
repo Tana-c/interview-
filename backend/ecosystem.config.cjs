@@ -1,11 +1,15 @@
 // PM2 Ecosystem Configuration
-// ใช้คำสั่ง: pm2 start ecosystem.config.js
-// Note: PM2 config ต้องใช้ CommonJS format
+// ใช้คำสั่ง: pm2 start ecosystem.config.cjs --env production
+// Note: PM2 config ต้องใช้ CommonJS format (.cjs extension)
+
+const path = require('path');
 
 module.exports = {
   apps: [{
     name: 'ai-interviewer',
-    script: 'src/server.js',
+    // ใช้ node โดยตรง - Node.js จะอ่าน package.json และรู้ว่าเป็น ES module
+    script: path.join(__dirname, 'src/server.js'),
+    interpreter: 'node',
     instances: 1,
     exec_mode: 'fork',
     env: {
