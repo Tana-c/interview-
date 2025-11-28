@@ -14,9 +14,6 @@ yarn-debug.log*
 yarn-error.log*
 pm2-*.log
 
-# Session data
-data/sessions/*.json
-
 # OS files
 .DS_Store
 Thumbs.db
