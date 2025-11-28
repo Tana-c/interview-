@@ -9,11 +9,8 @@ function ConfigPage({ onNavigateToInterview }) {
    * - ถ้า dev (localhost) -> http://localhost:7183/api
    * - ถ้า prod (โดเมนจริง) -> /api  แล้วให้ nginx proxy /api -> backend
    */
-  const API_BASE =
-    import.meta.env.VITE_API_BASE ||
-    (window.location.hostname === 'localhost'
-      ? 'http://localhost:7183/api'
-      : '/api');
+  const API_BASE = import.meta.env.VITE_API_BASE || '/api';
+
 
   const [activeTab, setActiveTab] = useState('question-prompt'); // เดิมเป็น 'code-types' แต่ไม่มี tab นี้แล้ว
   const [config, setConfig] = useState({

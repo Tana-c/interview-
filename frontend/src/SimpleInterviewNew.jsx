@@ -39,7 +39,7 @@ function SimpleInterview({ onNavigateToConfig }) {
   });
 
   // API Base URL - Support environment variable for production
-  const API_BASE = import.meta.env.VITE_API_BASE || 'https://72.61.120.205:7183';
+  const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
   // Initialize Speech Recognition
   useEffect(() => {
